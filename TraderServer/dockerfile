@@ -1,0 +1,4 @@
+FROM openjdk:11
+COPY ./out/production/TraderApp/ /tmp
+WORKDIR /tmp
+ENTRYPOINT ["java","TraderApp"]

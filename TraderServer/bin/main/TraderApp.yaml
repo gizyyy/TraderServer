@@ -1,0 +1,211 @@
+openapi: 3.0.1
+info:
+  version: v1
+  title: Trade API
+  description: A trade api for companies, those want to trade with each other
+  contact:
+    name: Gizem
+    email: gizemyilmaz1988@gmail.com
+servers:
+  - url: http://localhost:8080
+    description: Generated server url
+paths:
+  /trade/contracts:
+    post:
+      tags:
+        - trade-resource
+      summary:
+        Add a direct trade between two companies, if company is not regostered,
+        method first registers the company
+      operationId: addTrade
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Company'
+        required: true
+      responses:
+        '200':
+          description: Successfully added.
+          content:
+            '*/*':
+              schema:
+                type: string
+        '400':
+          description: Company input error
+          content:
+            '*/*':
+              schema:
+                type: string
+    delete:
+      tags:
+        - trade-resource
+      summary: Removes a direct trade between two companies
+      operationId: removeTrade
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Company'
+        required: true
+      responses:
+        '204':
+          description: Successfully deleted.
+          content:
+            '*/*':
+              schema:
+                type: string
+        '400':
+          description: Company input error
+          content:
+            '*/*':
+              schema:
+                type: string
+  /trade/companies:
+    get:
+      tags:
+        - trade-resource
+      summary: List all registered companies
+      operationId: getCompanies
+      responses:
+        '200':
+          description: Successfully retrieved
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Company'
+    post:
+      tags:
+        - trade-resource
+      summary: Register a company
+      operationId: addCompany
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Company'
+        required: true
+      responses:
+        '200':
+          description: Successfully registered
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Company'
+  /trade/sleeves/{trader}/{tradee}:
+    get:
+      tags:
+        - trade-resource
+      summary: Shows sleeves
+      operationId: showSleeves
+      parameters:
+        - name: trader
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: tradee
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully retrieved
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  uniqueItems: true
+                  type: array
+                  items:
+                    type: string
+        '404':
+          description: Both or one of the companies not found
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  uniqueItems: true
+                  type: array
+                  items:
+                    type: string
+  /trade/contracts/{trader}/{tradee}:
+    get:
+      tags:
+        - trade-resource
+      summary: Checks if 2 companies can trade with each other
+      operationId: canTrade
+      parameters:
+        - name: trader
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: tradee
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: directTrade
+          in: query
+          required: false
+          schema:
+            type: boolean
+            default: false
+      responses:
+        '200':
+          description: Successfully retrieved
+          content:
+            '*/*':
+              schema:
+                type: boolean
+        '404':
+          description: Both or one of the companies not found
+          content:
+            '*/*':
+              schema:
+                type: boolean
+  /trade/companies/{id}:
+    get:
+      tags:
+        - trade-resource
+      summary: Gets a certain registered company with name
+      operationId: getCompany
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully retrieved
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Company'
+        '404':
+          description: Company not found
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Company'
+components:
+  schemas:
+    Company:
+      type: object
+      properties:
+        companyId:
+          type: integer
+          format: int32
+        companyName:
+          type: string
